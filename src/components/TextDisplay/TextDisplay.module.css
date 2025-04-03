@@ -1,0 +1,6 @@
+.textDisplay {
+    border: 1px solid #ccc;
+    padding: 10px;
+    min-height: 100px;
+    font-family: Arial, sans-serif;
+  }
