@@ -1,17 +1,28 @@
 import KeyButton from "../KeyButton/KeyButton";
 import styles from "./VirtualKeyboard.module.css";
 
-const keys = {
-  en: "abcdefghijklmnopqrstuvwxyz".split(""),
-  he: "אבגדהוזחטיכלמנסעפצקרשת".split(""),
-};
-
-function VirtualKeyboard({ onKeyPress, language }) {
+function VirtualKeyboard({ onKeyPress, onDelete, language }) {
+  const keys =
+    language === "en"
+      ? "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("")
+      : "אבגדהוזחטיכלמנסעפצקרשת".split("");
   return (
     <div className={styles.keyboard}>
-      {keys[language].map((key) => (
-        <KeyButton key={key} label={key} onClick={() => onKeyPress(key)} />
+      {keys.map((key) => (
+        <button
+          key={key}
+          className={styles.key}
+          onClick={() => onKeyPress(key)}
+        >
+          {key}
+        </button>
       ))}
+      <button className={styles.key} onClick={() => onKeyPress(" ")}>
+        Space
+      </button>
+      <button className={styles.key} onClick={onDelete}>
+        Delete
+      </button>
     </div>
   );
 }

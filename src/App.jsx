@@ -6,10 +6,7 @@ import styles from "./App.module.css";
 
 function App() {
   const [textBlocks, setTextBlocks] = useState([]);
-  const [currentStyle, setCurrentStyle] = useState({
-    color: "black",
-    fontSize: "16px",
-  });
+  const [currentStyle, setCurrentStyle] = useState({ color: "black", fontSize: "16px" });
   const [language, setLanguage] = useState("en");
   const [selectionIndex, setSelectionIndex] = useState(null);
 
@@ -19,28 +16,34 @@ function App() {
 
       if (selectionIndex !== null) {
         const selectedBlock = updatedBlocks[selectionIndex];
-
-        if (
-          JSON.stringify(selectedBlock.style) === JSON.stringify(currentStyle)
-        ) {
-          // If styles match, append to the same block
+        
+        if (JSON.stringify(selectedBlock.style) === JSON.stringify(currentStyle)) {
           updatedBlocks[selectionIndex] = {
             ...selectedBlock,
             text: selectedBlock.text + char,
           };
         } else {
-          // If styles are different, create a new block
-          updatedBlocks.splice(selectionIndex + 1, 0, {
-            text: char,
-            style: currentStyle,
-          });
-          setSelectionIndex(selectionIndex + 1); // Update selection to new block
+          updatedBlocks.splice(selectionIndex + 1, 0, { text: char, style: currentStyle });
+          setSelectionIndex(selectionIndex + 1);
         }
       } else {
-        // Append new text with current style
         updatedBlocks.push({ text: char, style: currentStyle });
       }
+      
+      return updatedBlocks;
+    });
+  };
 
+  const handleDelete = () => {
+    setTextBlocks((prevBlocks) => {
+      if (prevBlocks.length === 0) return prevBlocks;
+      const updatedBlocks = [...prevBlocks];
+      const lastBlock = updatedBlocks[updatedBlocks.length - 1];
+      if (lastBlock.text.length > 1) {
+        lastBlock.text = lastBlock.text.slice(0, -1);
+      } else {
+        updatedBlocks.pop();
+      }
       return updatedBlocks;
     });
   };
@@ -60,11 +63,10 @@ function App() {
   return (
     <div className={styles.container}>
       <TextDisplay textBlocks={textBlocks} onSelectBlock={handleSelectBlock} />
-      <SpecialButtons
-        onStyleChange={handleStyleChange}
-        onLanguageChange={handleLanguageChange}
-      />
-      <VirtualKeyboard onKeyPress={handleTextChange} language={language} />
+      <div className={styles.controls}>
+        <SpecialButtons onStyleChange={handleStyleChange} onLanguageChange={handleLanguageChange} />
+        <VirtualKeyboard onKeyPress={handleTextChange} onDelete={handleDelete} language={language} />
+      </div>
     </div>
   );
 }

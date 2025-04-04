@@ -1,4 +1,21 @@
 .specialButtons {
     display: flex;
-    gap: 10px;
+    gap: 15px;
+    justify-content: center;
   }
+  
+  button {
+    padding: 10px;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+  }
+  
+  .blue { background-color: blue; color: white; }
+  .red { background-color: red; color: white; }
+  .large { background-color: gray; color: white; }
+  .small { background-color: lightgray; color: black; }
+  .english { background-color: green; color: white; }
+  .hebrew { background-color: purple; color: white; }

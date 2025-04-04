@@ -1,6 +1,11 @@
 .textDisplay {
-    border: 1px solid #ccc;
-    padding: 10px;
-    min-height: 100px;
-    font-family: Arial, sans-serif;
-  }
+  border: 2px solid #2c3e50;
+  padding: 20px;
+  min-height: 100px;
+  font-family: Arial, sans-serif;
+  background-color: white;
+  width: 80%;
+  text-align: left;
+  font-size: 18px;
+  border-radius: 5px;
+}
