@@ -6,22 +6,43 @@ import styles from "./App.module.css";
 
 function App() {
   const [textBlocks, setTextBlocks] = useState([]);
-  const [currentStyle, setCurrentStyle] = useState({ color: "black", fontSize: "16px" });
+  const [currentStyle, setCurrentStyle] = useState({
+    color: "black",
+    fontSize: "16px",
+  });
   const [language, setLanguage] = useState("en");
   const [selectionIndex, setSelectionIndex] = useState(null);
 
   const handleTextChange = (char) => {
-    if (selectionIndex !== null) {
-      // Modify selected text
-      setTextBlocks((prevBlocks) => {
-        const updatedBlocks = [...prevBlocks];
-        updatedBlocks[selectionIndex].text += char;
-        return updatedBlocks;
-      });
-    } else {
-      // Append new styled text
-      setTextBlocks((prev) => [...prev, { text: char, style: currentStyle }]);
-    }
+    setTextBlocks((prevBlocks) => {
+      const updatedBlocks = [...prevBlocks];
+
+      if (selectionIndex !== null) {
+        const selectedBlock = updatedBlocks[selectionIndex];
+
+        if (
+          JSON.stringify(selectedBlock.style) === JSON.stringify(currentStyle)
+        ) {
+          // If styles match, append to the same block
+          updatedBlocks[selectionIndex] = {
+            ...selectedBlock,
+            text: selectedBlock.text + char,
+          };
+        } else {
+          // If styles are different, create a new block
+          updatedBlocks.splice(selectionIndex + 1, 0, {
+            text: char,
+            style: currentStyle,
+          });
+          setSelectionIndex(selectionIndex + 1); // Update selection to new block
+        }
+      } else {
+        // Append new text with current style
+        updatedBlocks.push({ text: char, style: currentStyle });
+      }
+
+      return updatedBlocks;
+    });
   };
 
   const handleStyleChange = (newStyle) => {
@@ -39,7 +60,10 @@ function App() {
   return (
     <div className={styles.container}>
       <TextDisplay textBlocks={textBlocks} onSelectBlock={handleSelectBlock} />
-      <SpecialButtons onStyleChange={handleStyleChange} onLanguageChange={handleLanguageChange} />
+      <SpecialButtons
+        onStyleChange={handleStyleChange}
+        onLanguageChange={handleLanguageChange}
+      />
       <VirtualKeyboard onKeyPress={handleTextChange} language={language} />
     </div>
   );
