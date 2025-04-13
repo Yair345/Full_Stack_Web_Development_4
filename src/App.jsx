@@ -1,71 +1,67 @@
+// App.jsx
 import { useState } from "react";
-import TextDisplay from "./components/TextDisplay/TextDisplay";
 import VirtualKeyboard from "./components/VirtualKeyboard/VirtualKeyboard";
+import TextDisplay from "./components/TextDisplay/TextDisplay";
 import SpecialButtons from "./components/SpecialButtons/SpecialButtons";
 import styles from "./App.module.css";
 
 function App() {
   const [textBlocks, setTextBlocks] = useState([]);
-  const [currentStyle, setCurrentStyle] = useState({ color: "black", fontSize: "16px" });
   const [language, setLanguage] = useState("en");
-  const [selectionIndex, setSelectionIndex] = useState(null);
+  const [currentStyle, setCurrentStyle] = useState({});
 
-  const handleTextChange = (char) => {
-    setTextBlocks((prevBlocks) => {
-      const updatedBlocks = [...prevBlocks];
-
-      if (selectionIndex !== null) {
-        const selectedBlock = updatedBlocks[selectionIndex];
-        
-        if (JSON.stringify(selectedBlock.style) === JSON.stringify(currentStyle)) {
-          updatedBlocks[selectionIndex] = {
-            ...selectedBlock,
-            text: selectedBlock.text + char,
-          };
-        } else {
-          updatedBlocks.splice(selectionIndex + 1, 0, { text: char, style: currentStyle });
-          setSelectionIndex(selectionIndex + 1);
-        }
-      } else {
-        updatedBlocks.push({ text: char, style: currentStyle });
-      }
-      
-      return updatedBlocks;
-    });
+  const handleKeyPress = (key) => {
+    const newBlock = {
+      text: key,
+      style: currentStyle,
+    };
+    setTextBlocks((prev) => [...prev, newBlock]);
   };
 
   const handleDelete = () => {
-    setTextBlocks((prevBlocks) => {
-      if (prevBlocks.length === 0) return prevBlocks;
-      const updatedBlocks = [...prevBlocks];
-      const lastBlock = updatedBlocks[updatedBlocks.length - 1];
-      if (lastBlock.text.length > 1) {
-        lastBlock.text = lastBlock.text.slice(0, -1);
-      } else {
-        updatedBlocks.pop();
-      }
-      return updatedBlocks;
+    setTextBlocks((prev) => prev.slice(0, -1));
+  };
+
+  const handleDeleteWord = () => {
+    setTextBlocks((prev) => {
+      let i = prev.length - 1;
+      while (i >= 0 && prev[i].text === " ") i--;
+      while (i >= 0 && prev[i].text !== " ") i--;
+      return prev.slice(0, i + 1);
     });
   };
 
-  const handleStyleChange = (newStyle) => {
-    setCurrentStyle((prev) => ({ ...prev, ...newStyle }));
+  const handleClearText = () => {
+    setTextBlocks([]);
   };
 
-  const handleLanguageChange = (newLang) => {
-    setLanguage(newLang);
-  };
-
-  const handleSelectBlock = (index) => {
-    setSelectionIndex(index);
+  const handleEnter = () => {
+    const newBlock = {
+      text: "\n",
+      style: currentStyle,
+    };
+    setTextBlocks((prev) => [...prev, newBlock]);
   };
 
   return (
     <div className={styles.container}>
-      <TextDisplay textBlocks={textBlocks} onSelectBlock={handleSelectBlock} />
-      <div className={styles.controls}>
-        <SpecialButtons onStyleChange={handleStyleChange} onLanguageChange={handleLanguageChange} />
-        <VirtualKeyboard onKeyPress={handleTextChange} onDelete={handleDelete} language={language} />
+      <h1>Virtual Keyboard App</h1>
+      <TextDisplay textBlocks={textBlocks} onSelectBlock={() => {}} />
+      <div style={{ display: "flex", marginTop: "20px" }}>
+        <div style={{ marginRight: "20px" }}>
+          <SpecialButtons
+            setCurrentStyle={setCurrentStyle}
+            onDeleteWord={handleDeleteWord}
+            onClearText={handleClearText}
+          />
+        </div>
+        <VirtualKeyboard
+          onKeyPress={handleKeyPress}
+          onDelete={handleDelete}
+          onEnter={handleEnter}
+          language={language}
+          setLanguage={setLanguage}
+        />
       </div>
     </div>
   );
