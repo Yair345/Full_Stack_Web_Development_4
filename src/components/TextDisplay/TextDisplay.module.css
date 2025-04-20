@@ -8,4 +8,36 @@
   text-align: left;
   font-size: 18px;
   border-radius: 5px;
+  position: relative;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.textBlock {
+  display: inline;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.textBlock:hover {
+  background-color: rgba(200, 200, 255, 0.2);
+}
+
+.cursor {
+  display: inline-block;
+  width: 2px;
+  height: 18px;
+  background-color: #2c3e50;
+  margin-left: 1px;
+  animation: blink 1s infinite;
+  vertical-align: middle;
+}
+
+@keyframes blink {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
 }
