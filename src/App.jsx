@@ -4,12 +4,8 @@ import VirtualKeyboard from "./components/VirtualKeyboard/VirtualKeyboard";
 import TextDisplay from "./components/TextDisplay/TextDisplay";
 import SpecialButtons from "./components/SpecialButtons/SpecialButtons";
 import AdvancedEditingTools from "./components/AdvancedEditingTools/AdvancedEditingTools";
+import FileManager from "./components/FileManager/FileManager";
 import styles from "./App.module.css";
-import {
-  saveToLocalStorage,
-  loadFromLocalStorage,
-  listSavedFilenames,
-} from "./utils/storageUtils";
 
 function App() {
   const [textBlocks, setTextBlocks] = useState([]);
@@ -80,47 +76,11 @@ function App() {
     }
   };
 
-  // Save/load from localStorage
-  const handleSaveToLocalStorage = () => {
-    const filename = prompt("Enter a filename to save:");
-    if (filename) {
-      saveToLocalStorage(filename, textBlocks);
-    }
-  };
-
-  const handleLoadFromLocalStorage = (filename) => {
-    if (filename) {
-      const loadedBlocks = loadFromLocalStorage(filename);
-      if (loadedBlocks.length) {
-        saveToHistory();
-        setTextBlocks(loadedBlocks);
-      }
-    }
-  };
-
   return (
     <div className={styles.container}>
       <h1>Virtual Keyboard App</h1>
 
-      {/* Save/load buttons */}
-      <div style={{ display: "flex", gap: "10px", marginBottom: "10px" }}>
-        <button onClick={handleSaveToLocalStorage}>💾 Save</button>
-        <button
-          onClick={() => {
-            const filenames = listSavedFilenames();
-            if (filenames.length === 0) {
-              alert("No saved files found.");
-              return;
-            }
-            const filename = prompt(
-              `Enter filename to load:\n${filenames.join("\n")}`
-            );
-            if (filename) handleLoadFromLocalStorage(filename);
-          }}
-        >
-          📂 Load
-        </button>
-      </div>
+      <FileManager textBlocks={textBlocks} setTextBlocks={setTextBlocks} />
 
       <TextDisplay
         textBlocks={textBlocks}
