@@ -6,6 +6,10 @@ function AdvancedEditingTools({
   setTextBlocks,
   history,
   setHistory,
+  selectedBlockIndex,
+  setSelectedBlockIndex,
+  allBlocksSelected,
+  setAllBlocksSelected, // Add these new props
 }) {
   const [searchText, setSearchText] = useState("");
   const [replaceText, setReplaceText] = useState("");
@@ -278,6 +282,14 @@ function AdvancedEditingTools({
     }));
 
     setTextBlocks(updatedBlocks);
+
+    // Set the all blocks selected flag to true
+    setAllBlocksSelected(true);
+
+    // Select the first block (for showing what style is currently selected)
+    if (textBlocks.length > 0) {
+      setSelectedBlockIndex(0);
+    }
   };
 
   const handleUnSelectAll = () => {
@@ -289,6 +301,12 @@ function AdvancedEditingTools({
       return { ...block, style: restStyle };
     });
     setTextBlocks(updatedBlocks);
+
+    // Turn off the all blocks selected flag
+    setAllBlocksSelected(false);
+
+    // Deselect all blocks
+    setSelectedBlockIndex(-1);
   };
 
   const handleChangeCase = (caseType) => {

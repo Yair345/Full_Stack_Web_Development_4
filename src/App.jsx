@@ -13,6 +13,7 @@ function App() {
   const [currentStyle, setCurrentStyle] = useState({});
   const [history, setHistory] = useState([]);
   const [selectedBlockIndex, setSelectedBlockIndex] = useState(-1);
+  const [allBlocksSelected, setAllBlocksSelected] = useState(false); // New state to track if all blocks are selected
 
   const handleKeyPress = (key) => {
     const newBlock = {
@@ -69,6 +70,7 @@ function App() {
 
   const handleSelectBlock = (index) => {
     setSelectedBlockIndex(index);
+    setAllBlocksSelected(false); // Turn off "all blocks selected" mode when a specific block is selected
 
     // If a block is selected, update the current style to match
     if (index >= 0 && index < textBlocks.length) {
@@ -93,6 +95,10 @@ function App() {
         setTextBlocks={setTextBlocks}
         history={history}
         setHistory={setHistory}
+        selectedBlockIndex={selectedBlockIndex}
+        setSelectedBlockIndex={setSelectedBlockIndex}
+        allBlocksSelected={allBlocksSelected}
+        setAllBlocksSelected={setAllBlocksSelected}
       />
 
       <div className={styles.controls}>
@@ -101,6 +107,9 @@ function App() {
           onDeleteWord={handleDeleteWord}
           onClearText={handleClearText}
           currentStyle={currentStyle}
+          selectedBlockIndex={selectedBlockIndex}
+          setTextBlocks={setTextBlocks}
+          allBlocksSelected={allBlocksSelected}
         />
 
         <VirtualKeyboard

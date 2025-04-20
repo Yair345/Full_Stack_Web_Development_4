@@ -6,6 +6,9 @@ function SpecialButtons({
   onDeleteWord,
   onClearText,
   currentStyle,
+  selectedBlockIndex,
+  setTextBlocks,
+  allBlocksSelected, // Add this new prop
 }) {
   const fontSizes = [8, 10, 12, 14, 16, 18, 20, 24, 28, 32, 36, 48, 72];
   const fonts = [
@@ -17,14 +20,75 @@ function SpecialButtons({
   ];
 
   const handleStyleChange = (key, value) => {
+    // Update current style
     setCurrentStyle((prev) => ({ ...prev, [key]: value }));
+
+    // If all blocks are selected, update all blocks
+    if (allBlocksSelected) {
+      setTextBlocks((prev) => {
+        return prev.map((block) => ({
+          ...block,
+          style: {
+            ...block.style,
+            [key]: value,
+          },
+        }));
+      });
+    }
+    // Otherwise, update just the selected block if a block is selected
+    else if (selectedBlockIndex >= 0) {
+      setTextBlocks((prev) => {
+        const newBlocks = [...prev];
+        newBlocks[selectedBlockIndex] = {
+          ...newBlocks[selectedBlockIndex],
+          style: {
+            ...newBlocks[selectedBlockIndex].style,
+            [key]: value,
+          },
+        };
+        return newBlocks;
+      });
+    }
   };
 
   const toggleStyle = (styleKey, activeValue, inactiveValue = "normal") => {
+    // Determine the new value based on current state
+    const newValue = isStyleActive(styleKey, activeValue)
+      ? inactiveValue
+      : activeValue;
+
+    // Update current style
     setCurrentStyle((prev) => ({
       ...prev,
-      [styleKey]: prev[styleKey] === activeValue ? inactiveValue : activeValue,
+      [styleKey]: newValue,
     }));
+
+    // If all blocks are selected, update all blocks
+    if (allBlocksSelected) {
+      setTextBlocks((prev) => {
+        return prev.map((block) => ({
+          ...block,
+          style: {
+            ...block.style,
+            [styleKey]: newValue,
+          },
+        }));
+      });
+    }
+    // Otherwise, update just the selected block if a block is selected
+    else if (selectedBlockIndex >= 0) {
+      setTextBlocks((prev) => {
+        const newBlocks = [...prev];
+        newBlocks[selectedBlockIndex] = {
+          ...newBlocks[selectedBlockIndex],
+          style: {
+            ...newBlocks[selectedBlockIndex].style,
+            [styleKey]: newValue,
+          },
+        };
+        return newBlocks;
+      });
+    }
   };
 
   // Helper function to determine if a style is active
