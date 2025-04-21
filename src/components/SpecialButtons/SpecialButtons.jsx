@@ -8,7 +8,8 @@ function SpecialButtons({
   currentStyle,
   selectedBlockIndex,
   setTextBlocks,
-  allBlocksSelected, // Add this new prop
+  allBlocksSelected,
+  textBlocks, // Add this to receive the current active display's blocks
 }) {
   const fontSizes = [8, 10, 12, 14, 16, 18, 20, 24, 28, 32, 36, 48, 72];
   const fonts = [
@@ -36,16 +37,18 @@ function SpecialButtons({
       });
     }
     // Otherwise, update just the selected block if a block is selected
-    else if (selectedBlockIndex >= 0) {
+    else if (selectedBlockIndex >= 0 && textBlocks && textBlocks.length > 0) {
       setTextBlocks((prev) => {
         const newBlocks = [...prev];
-        newBlocks[selectedBlockIndex] = {
-          ...newBlocks[selectedBlockIndex],
-          style: {
-            ...newBlocks[selectedBlockIndex].style,
-            [key]: value,
-          },
-        };
+        if (newBlocks[selectedBlockIndex]) {
+          newBlocks[selectedBlockIndex] = {
+            ...newBlocks[selectedBlockIndex],
+            style: {
+              ...newBlocks[selectedBlockIndex].style,
+              [key]: value,
+            },
+          };
+        }
         return newBlocks;
       });
     }
@@ -76,16 +79,18 @@ function SpecialButtons({
       });
     }
     // Otherwise, update just the selected block if a block is selected
-    else if (selectedBlockIndex >= 0) {
+    else if (selectedBlockIndex >= 0 && textBlocks && textBlocks.length > 0) {
       setTextBlocks((prev) => {
         const newBlocks = [...prev];
-        newBlocks[selectedBlockIndex] = {
-          ...newBlocks[selectedBlockIndex],
-          style: {
-            ...newBlocks[selectedBlockIndex].style,
-            [styleKey]: newValue,
-          },
-        };
+        if (newBlocks[selectedBlockIndex]) {
+          newBlocks[selectedBlockIndex] = {
+            ...newBlocks[selectedBlockIndex],
+            style: {
+              ...newBlocks[selectedBlockIndex].style,
+              [styleKey]: newValue,
+            },
+          };
+        }
         return newBlocks;
       });
     }

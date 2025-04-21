@@ -1,19 +1,51 @@
 // App.jsx
 import { useState } from "react";
 import VirtualKeyboard from "./components/VirtualKeyboard/VirtualKeyboard";
-import TextDisplay from "./components/TextDisplay/TextDisplay";
+import DisplayManager from "./components/DisplayManager/DisplayManager";
 import SpecialButtons from "./components/SpecialButtons/SpecialButtons";
 import AdvancedEditingTools from "./components/AdvancedEditingTools/AdvancedEditingTools";
 import FileManager from "./components/FileManager/FileManager";
 import styles from "./App.module.css";
 
 function App() {
-  const [textBlocks, setTextBlocks] = useState([]);
+  // Array of displays, each containing text blocks
+  const [displays, setDisplays] = useState([[]]);
+  const [activeDisplayIndex, setActiveDisplayIndex] = useState(0);
+  
   const [language, setLanguage] = useState("en");
   const [currentStyle, setCurrentStyle] = useState({});
-  const [history, setHistory] = useState([]);
+  const [displayHistories, setDisplayHistories] = useState([[]]);
   const [selectedBlockIndex, setSelectedBlockIndex] = useState(-1);
-  const [allBlocksSelected, setAllBlocksSelected] = useState(false); // New state to track if all blocks are selected
+  const [allBlocksSelected, setAllBlocksSelected] = useState(false);
+
+  // Helper to access current display's text blocks
+  const getCurrentDisplayBlocks = () => {
+    return displays[activeDisplayIndex] || [];
+  };
+
+  // Helper to update current display's text blocks
+  const updateCurrentDisplayBlocks = (newBlocks) => {
+    const newDisplays = [...displays];
+    newDisplays[activeDisplayIndex] = newBlocks;
+    setDisplays(newDisplays);
+  };
+
+  // Helper to update current display's history
+  const saveToCurrentHistory = () => {
+    const newDisplayHistories = [...displayHistories];
+    
+    // Create the history array for this display if it doesn't exist
+    if (!newDisplayHistories[activeDisplayIndex]) {
+      newDisplayHistories[activeDisplayIndex] = [];
+    }
+    
+    newDisplayHistories[activeDisplayIndex] = [
+      ...newDisplayHistories[activeDisplayIndex],
+      [...getCurrentDisplayBlocks()]
+    ];
+    
+    setDisplayHistories(newDisplayHistories);
+  };
 
   const handleKeyPress = (key) => {
     const newBlock = {
@@ -22,79 +54,99 @@ function App() {
     };
 
     // Save current state to history for undo
-    saveToHistory();
+    saveToCurrentHistory();
 
-    setTextBlocks((prev) => [...prev, newBlock]);
+    // Update the active display's text blocks
+    updateCurrentDisplayBlocks([...getCurrentDisplayBlocks(), newBlock]);
   };
 
   const handleDelete = () => {
-    if (textBlocks.length === 0) return;
+    const currentBlocks = getCurrentDisplayBlocks();
+    if (currentBlocks.length === 0) return;
 
     // Save current state to history for undo
-    saveToHistory();
-    setTextBlocks((prev) => prev.slice(0, -1));
+    saveToCurrentHistory();
+    updateCurrentDisplayBlocks(currentBlocks.slice(0, -1));
   };
 
   const handleDeleteWord = () => {
-    if (textBlocks.length === 0) return;
-    saveToHistory();
-    setTextBlocks((prev) => {
-      let i = prev.length - 1;
-      while (i >= 0 && prev[i].text === " ") i--;
-      while (i >= 0 && prev[i].text !== " ") i--;
-      return prev.slice(0, i + 1);
-    });
+    const currentBlocks = getCurrentDisplayBlocks();
+    if (currentBlocks.length === 0) return;
+    
+    saveToCurrentHistory();
+    
+    let i = currentBlocks.length - 1;
+    while (i >= 0 && currentBlocks[i].text === " ") i--;
+    while (i >= 0 && currentBlocks[i].text !== " ") i--;
+    
+    updateCurrentDisplayBlocks(currentBlocks.slice(0, i + 1));
   };
 
   const handleClearText = () => {
-    if (textBlocks.length === 0) return;
+    const currentBlocks = getCurrentDisplayBlocks();
+    if (currentBlocks.length === 0) return;
 
     // Save current state to history for undo
-    saveToHistory();
-    setTextBlocks([]);
+    saveToCurrentHistory();
+    updateCurrentDisplayBlocks([]);
   };
 
   const handleEnter = () => {
     // Save current state to history for undo
-    saveToHistory();
+    saveToCurrentHistory();
     const newBlock = {
       text: "\n",
       style: currentStyle,
     };
-    setTextBlocks((prev) => [...prev, newBlock]);
-  };
-
-  const saveToHistory = () => {
-    setHistory((prev) => [...prev, [...textBlocks]]);
+    updateCurrentDisplayBlocks([...getCurrentDisplayBlocks(), newBlock]);
   };
 
   const handleSelectBlock = (index) => {
     setSelectedBlockIndex(index);
-    setAllBlocksSelected(false); // Turn off "all blocks selected" mode when a specific block is selected
+    setAllBlocksSelected(false);
 
     // If a block is selected, update the current style to match
-    if (index >= 0 && index < textBlocks.length) {
-      setCurrentStyle(textBlocks[index].style || {});
+    const currentBlocks = getCurrentDisplayBlocks();
+    if (index >= 0 && index < currentBlocks.length) {
+      setCurrentStyle(currentBlocks[index].style || {});
     }
+  };
+
+  // Get history for the current display
+  const getCurrentHistory = () => {
+    return displayHistories[activeDisplayIndex] || [];
+  };
+
+  // Set history for the current display
+  const setCurrentHistory = (newHistory) => {
+    const newDisplayHistories = [...displayHistories];
+    newDisplayHistories[activeDisplayIndex] = newHistory;
+    setDisplayHistories(newDisplayHistories);
   };
 
   return (
     <div className={styles.container}>
       <h1>Virtual Keyboard App</h1>
 
-      <FileManager textBlocks={textBlocks} setTextBlocks={setTextBlocks} />
+      <FileManager 
+        textBlocks={getCurrentDisplayBlocks()} 
+        setTextBlocks={updateCurrentDisplayBlocks}
+      />
 
-      <TextDisplay
-        textBlocks={textBlocks}
+      <DisplayManager
+        displays={displays}
+        setDisplays={setDisplays}
+        activeDisplayIndex={activeDisplayIndex}
+        setActiveDisplayIndex={setActiveDisplayIndex}
         onSelectBlock={handleSelectBlock}
         selectedBlockIndex={selectedBlockIndex}
       />
 
       <AdvancedEditingTools
-        textBlocks={textBlocks}
-        setTextBlocks={setTextBlocks}
-        history={history}
-        setHistory={setHistory}
+        textBlocks={getCurrentDisplayBlocks()}
+        setTextBlocks={updateCurrentDisplayBlocks}
+        history={getCurrentHistory()}
+        setHistory={setCurrentHistory}
         selectedBlockIndex={selectedBlockIndex}
         setSelectedBlockIndex={setSelectedBlockIndex}
         allBlocksSelected={allBlocksSelected}
@@ -108,8 +160,9 @@ function App() {
           onClearText={handleClearText}
           currentStyle={currentStyle}
           selectedBlockIndex={selectedBlockIndex}
-          setTextBlocks={setTextBlocks}
+          setTextBlocks={updateCurrentDisplayBlocks}
           allBlocksSelected={allBlocksSelected}
+          textBlocks={getCurrentDisplayBlocks()}
         />
 
         <VirtualKeyboard
