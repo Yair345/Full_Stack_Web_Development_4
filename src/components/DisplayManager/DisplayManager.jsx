@@ -23,6 +23,23 @@ function DisplayManager({
       return;
     }
 
+    // If the display has content, suggest saving
+    if (displays[indexToRemove] && displays[indexToRemove].length > 0) {
+      const shouldSave = window.confirm("Would you like to save this text before closing?");
+      
+      if (shouldSave) {
+        // Set this display as active so the user can save it using the FileManager
+        setActiveDisplayIndex(indexToRemove);
+        
+        // Display a message to the user to use the save functionality
+        alert("Please use the Save button at the top to save your text, then close this display again.");
+        
+        // Exit early without removing the display
+        return;
+      }
+    }
+
+    // Remove the display if the user doesn't want to save or after saving
     setDisplays((prev) => prev.filter((_, index) => index !== indexToRemove));
 
     // Update active display index if needed
