@@ -105,7 +105,7 @@ function SpecialButtons({
     <div className={styles.specialButtons}>
       <div className={styles.colorContainer}>
         <label>
-          צבע טקסט:
+          Text Color:
           <input
             type="color"
             onChange={(e) => handleStyleChange("color", e.target.value)}
@@ -117,7 +117,7 @@ function SpecialButtons({
 
       <div className={styles.fontContainer}>
         <label>
-          גודל טקסט:
+          Text Size:
           <select
             onChange={(e) =>
               handleStyleChange("fontSize", `${e.target.value}px`)
@@ -135,7 +135,7 @@ function SpecialButtons({
 
       <div className={styles.fontContainer}>
         <label>
-          סוג פונט:
+          font family:
           <select
             onChange={(e) => handleStyleChange("fontFamily", e.target.value)}
             value={currentStyle.fontFamily || "Arial"}
@@ -174,10 +174,10 @@ function SpecialButtons({
 
       <div className={styles.specialButtons}>
         <button onClick={onDeleteWord} className={styles.red}>
-          מחק מילה
+          delete word
         </button>
         <button onClick={onClearText} className={styles.red}>
-          מחק הכל
+          delete all
         </button>
       </div>
     </div>

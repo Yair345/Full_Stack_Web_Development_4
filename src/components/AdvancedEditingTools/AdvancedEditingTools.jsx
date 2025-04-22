@@ -348,11 +348,11 @@ function AdvancedEditingTools({
             type="text"
             value={searchText}
             onChange={(e) => setSearchText(e.target.value)}
-            placeholder="חפש טקסט"
+            placeholder="search for text" 
             className={styles.input}
           />
           <button onClick={handleSearch} className={styles.button}>
-            חפש
+            search
           </button>
           {searchResults.length > 0 && (
             <>
@@ -360,7 +360,7 @@ function AdvancedEditingTools({
                 onClick={() => navigateResults(-1)}
                 className={styles.button}
               >
-                הקודם
+                privious
               </button>
               <span className={styles.resultCount}>{`${
                 currentResultIndex + 1
@@ -369,7 +369,7 @@ function AdvancedEditingTools({
                 onClick={() => navigateResults(1)}
                 className={styles.button}
               >
-                הבא
+                next
               </button>
             </>
           )}
@@ -380,14 +380,14 @@ function AdvancedEditingTools({
             type="text"
             value={replaceText}
             onChange={(e) => setReplaceText(e.target.value)}
-            placeholder="החלף ב..."
+            placeholder="replace with"
             className={styles.input}
           />
           <button onClick={handleReplaceCurrent} className={styles.button}>
-            החלף
+            replace
           </button>
           <button onClick={handleReplaceAll} className={styles.button}>
-            החלף הכל
+            replace all
           </button>
         </div>
       </div>
@@ -397,37 +397,37 @@ function AdvancedEditingTools({
           onClick={handleUndo}
           className={`${styles.button} ${styles.blue}`}
         >
-          בטל (Undo)
+          Undo
         </button>
         <button
           onClick={handleSelectAll}
           className={`${styles.button} ${styles.large}`}
         >
-          בחר הכל
+          Select All 
         </button>
         <button
           onClick={handleUnSelectAll}
           className={`${styles.button} ${styles.large}`}
         >
-          בטל בחירה
+          Cancle Selection
         </button>
         <button
           onClick={() => handleChangeCase("upper")}
           className={`${styles.button} ${styles.english}`}
         >
-          אותיות גדולות
+          Uppercase Letters
         </button>
         <button
           onClick={() => handleChangeCase("lower")}
           className={`${styles.button} ${styles.small}`}
         >
-          אותיות קטנות
+          Lowercase Letters
         </button>
         <button
           onClick={() => handleChangeCase("title")}
           className={`${styles.button} ${styles.hebrew}`}
         >
-          אותיות ראשונות גדולות
+          Uppercase Letters First
         </button>
       </div>
     </div>
