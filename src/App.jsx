@@ -1,13 +1,19 @@
 // App.jsx
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import VirtualKeyboard from "./components/VirtualKeyboard/VirtualKeyboard";
 import DisplayManager from "./components/DisplayManager/DisplayManager";
 import SpecialButtons from "./components/SpecialButtons/SpecialButtons";
 import AdvancedEditingTools from "./components/AdvancedEditingTools/AdvancedEditingTools";
 import FileManager from "./components/FileManager/FileManager";
+import AuthManager from "./components/AuthManager/AuthManager";
+import { getCurrentUser } from "./utils/userUtils";
 import styles from "./App.module.css";
 
 function App() {
+  // User authentication state
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [currentUser, setCurrentUser] = useState(null);
+
   // Array of displays, each containing text blocks
   const [displays, setDisplays] = useState([[]]);
   const [activeDisplayIndex, setActiveDisplayIndex] = useState(0);
@@ -17,6 +23,28 @@ function App() {
   const [displayHistories, setDisplayHistories] = useState([[]]);
   const [selectedBlockIndex, setSelectedBlockIndex] = useState(-1);
   const [allBlocksSelected, setAllBlocksSelected] = useState(false);
+
+  // Check login status on initial load
+  useEffect(() => {
+    const username = getCurrentUser();
+    if (username) {
+      setIsLoggedIn(true);
+      setCurrentUser(username);
+    }
+  }, []);
+
+  // Handle login status change
+  const handleLoginStatusChange = (status, user) => {
+    setIsLoggedIn(status);
+    setCurrentUser(user);
+    
+    if (!status) {
+      // Reset displays when logging out
+      setDisplays([[]]);
+      setActiveDisplayIndex(0);
+      setDisplayHistories([[]]);
+    }
+  };
 
   // Helper to access current display's text blocks
   const getCurrentDisplayBlocks = () => {
@@ -126,13 +154,19 @@ function App() {
 
   return (
     <div className={styles.container}>
-      <h1>Virtual Keyboard App</h1>
+      <h1>Visual Text Editor</h1>
 
+      {/* Authentication Component */}
+      <AuthManager onLoginStatusChange={handleLoginStatusChange} />
+
+      {/* File Management Component */}
       <FileManager 
         textBlocks={getCurrentDisplayBlocks()} 
         setTextBlocks={updateCurrentDisplayBlocks}
+        isLoggedIn={isLoggedIn}
       />
 
+      {/* Display Area */}
       <DisplayManager
         displays={displays}
         setDisplays={setDisplays}
@@ -142,6 +176,7 @@ function App() {
         selectedBlockIndex={selectedBlockIndex}
       />
 
+      {/* Advanced Editing Tools */}
       <AdvancedEditingTools
         textBlocks={getCurrentDisplayBlocks()}
         setTextBlocks={updateCurrentDisplayBlocks}
@@ -154,6 +189,7 @@ function App() {
       />
 
       <div className={styles.controls}>
+        {/* Text Formatting Controls */}
         <SpecialButtons
           setCurrentStyle={setCurrentStyle}
           onDeleteWord={handleDeleteWord}
@@ -165,6 +201,7 @@ function App() {
           textBlocks={getCurrentDisplayBlocks()}
         />
 
+        {/* Virtual Keyboard */}
         <VirtualKeyboard
           onKeyPress={handleKeyPress}
           onDelete={handleDelete}
