@@ -29,7 +29,7 @@ const addToUserFilesList = (filename) => {
     const listKey = getUserFilesListKey();
     const existingListJson = localStorage.getItem(listKey);
     let filesList = existingListJson ? JSON.parse(existingListJson) : [];
-    
+
     // Add the file if it's not already in the list
     if (!filesList.includes(filename)) {
       filesList.push(filename);
@@ -46,7 +46,7 @@ const removeFromUserFilesList = (filename) => {
     const listKey = getUserFilesListKey();
     const existingListJson = localStorage.getItem(listKey);
     let filesList = existingListJson ? JSON.parse(existingListJson) : [];
-    
+
     // Remove the file from the list
     filesList = filesList.filter(name => name !== filename);
     localStorage.setItem(listKey, JSON.stringify(filesList));
@@ -57,13 +57,13 @@ const removeFromUserFilesList = (filename) => {
 
 export const saveToLocalStorage = (filename, data) => {
   if (!filename || !data) return { success: false, message: "Filename and data are required" };
-  
+
   try {
     const username = getCurrentUser();
     if (!username) {
       return { success: false, message: "Please log in to save files" };
     }
-    
+
     const key = getFileKey(filename);
     const existing = localStorage.getItem(key);
 
@@ -72,10 +72,10 @@ export const saveToLocalStorage = (filename, data) => {
     }
 
     localStorage.setItem(key, JSON.stringify(data));
-    
+
     // Update the user's file list
     addToUserFilesList(filename);
-    
+
     return { success: true, message: `Saved as "${filename}"` };
   } catch (err) {
     console.error("Error saving to localStorage", err);
@@ -85,13 +85,13 @@ export const saveToLocalStorage = (filename, data) => {
 
 export const loadFromLocalStorage = (filename) => {
   if (!filename) return [];
-  
+
   try {
     const username = getCurrentUser();
     if (!username) {
       throw new Error("Please log in to load files");
     }
-    
+
     const key = getFileKey(filename);
     const json = localStorage.getItem(key);
     return json ? JSON.parse(json) : [];
@@ -107,7 +107,7 @@ export const listSavedFilenames = () => {
     if (!username) {
       return []; // Return empty array if no user is logged in
     }
-    
+
     const listKey = getUserFilesListKey();
     const json = localStorage.getItem(listKey);
     return json ? JSON.parse(json) : [];
@@ -119,24 +119,24 @@ export const listSavedFilenames = () => {
 
 export const deleteFile = (filename) => {
   if (!filename) return { success: false, message: "Filename is required" };
-  
+
   try {
     const username = getCurrentUser();
     if (!username) {
       return { success: false, message: "Please log in to delete files" };
     }
-    
+
     const key = getFileKey(filename);
-    
+
     if (!localStorage.getItem(key)) {
       return { success: false, message: `File "${filename}" not found` };
     }
-    
+
     localStorage.removeItem(key);
-    
+
     // Update the user's file list
     removeFromUserFilesList(filename);
-    
+
     return { success: true, message: `File "${filename}" deleted successfully` };
   } catch (err) {
     console.error("Error deleting file", err);
