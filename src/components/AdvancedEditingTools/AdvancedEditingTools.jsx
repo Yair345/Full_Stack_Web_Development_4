@@ -9,7 +9,7 @@ function AdvancedEditingTools({
 	selectedBlockIndex,
 	setSelectedBlockIndex,
 	allBlocksSelected,
-	setAllBlocksSelected, // Add these new props
+	setAllBlocksSelected,
 }) {
 	const [searchText, setSearchText] = useState("");
 	const [replaceText, setReplaceText] = useState("");
@@ -273,15 +273,20 @@ function AdvancedEditingTools({
 	};
 
 	const saveToHistory = () => {
-		setHistory((prev) => [...prev, [...textBlocks]]);
+		setHistory([...history, [...textBlocks]]);
 	};
 
 	const handleUndo = () => {
-		if (history.length === 0) return;
+		if (!history || history.length === 0) return;
 
+		// Get the previous state from history
 		const previousState = history[history.length - 1];
+		
+		// Update the text blocks with the previous state
 		setTextBlocks(previousState);
-		setHistory((prev) => prev.slice(0, -1));
+		
+		// Remove the last state from history
+		setHistory(history.slice(0, -1));
 	};
 
 	const handleSelectAll = () => {
@@ -375,7 +380,7 @@ function AdvancedEditingTools({
 								onClick={() => navigateResults(-1)}
 								className={styles.button}
 							>
-								privious
+								previous
 							</button>
 							<span className={styles.resultCount}>{`${
 								currentResultIndex + 1
@@ -430,7 +435,7 @@ function AdvancedEditingTools({
 					onClick={handleUnSelectAll}
 					className={`${styles.button} ${styles.large}`}
 				>
-					Cancle Selection
+					Cancel Selection
 				</button>
 				<button
 					onClick={() => handleChangeCase("upper")}
