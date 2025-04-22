@@ -64,16 +64,23 @@ function DisplayManager({
 
 	return (
 		<div className={styles.displayManager}>
-			<div className={styles.tabContainer}>
-				{displays.map((_, index) => (
+			<div className={styles.displayHeader}>
+				<h3>Open Documents</h3>
+				<button className={styles.addButton} onClick={addNewDisplay}>
+					+ Add New Document
+				</button>
+			</div>
+
+			<div className={styles.displayContainer}>
+				{/* Show all displays, not just the active one */}
+				{displays.map((display, index) => (
 					<div
 						key={index}
-						className={`${styles.tab} ${
-							activeDisplayIndex === index ? styles.activeTab : ""
+						className={`${styles.displayWrapper} ${
+							activeDisplayIndex === index ? styles.activeDisplay : ""
 						}`}
-						onClick={() => focusDisplay(index)}
+						onClick={() => index !== activeDisplayIndex && focusDisplay(index)}
 					>
-						<span>Display {index + 1}</span>
 						{displays.length > 1 && (
 							<button
 								className={styles.closeButton}
@@ -85,23 +92,16 @@ function DisplayManager({
 								×
 							</button>
 						)}
+						<div className={styles.displayTitle}>Document {index + 1}</div>
+						<TextDisplay
+							textBlocks={display}
+							onSelectBlock={(blockIndex) =>
+								index === activeDisplayIndex ? onSelectBlock(blockIndex) : null
+							}
+							selectedBlockIndex={index === activeDisplayIndex ? selectedBlockIndex : -1}
+						/>
 					</div>
 				))}
-				<button className={styles.addButton} onClick={addNewDisplay}>
-					+
-				</button>
-			</div>
-
-			<div className={styles.displayContainer}>
-				{displays.length > 0 && (
-					<TextDisplay
-						textBlocks={displays[activeDisplayIndex]}
-						onSelectBlock={(blockIndex) =>
-							onSelectBlock(blockIndex)
-						}
-						selectedBlockIndex={selectedBlockIndex}
-					/>
-				)}
 			</div>
 		</div>
 	);
