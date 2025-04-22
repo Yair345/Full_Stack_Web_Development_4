@@ -1,5 +1,5 @@
 // AuthManager.jsx
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import {
 	registerUser,
 	loginUser,
@@ -9,22 +9,18 @@ import {
 import styles from "./AuthManager.module.css";
 
 function AuthManager({ onLoginStatusChange }) {
+	// Initialize state with current user check
+	const initialUser = getCurrentUser();
 	const [username, setUsername] = useState("");
 	const [password, setPassword] = useState("");
 	const [isLogin, setIsLogin] = useState(true); // Toggle between login and register
 	const [message, setMessage] = useState("");
-	const [currentUser, setCurrentUser] = useState(null);
+	const [currentUser, setCurrentUser] = useState(initialUser);
 
-	// Check if user is already logged in
-	useEffect(() => {
-		const user = getCurrentUser();
-		if (user) {
-			setCurrentUser(user);
-			if (onLoginStatusChange) {
-				onLoginStatusChange(true, user);
-			}
-		}
-	}, [onLoginStatusChange]);
+	// If there's an initial user, notify parent component
+	if (initialUser && onLoginStatusChange) {
+		onLoginStatusChange(true, initialUser);
+	}
 
 	const handleSubmit = (e) => {
 		e.preventDefault();
