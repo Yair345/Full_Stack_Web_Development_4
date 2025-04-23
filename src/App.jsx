@@ -1,217 +1,112 @@
 // App.jsx
-import { useState, useEffect } from "react";
-import VirtualKeyboard from "./components/VirtualKeyboard/VirtualKeyboard";
+import { useState } from "react";
 import DisplayManager from "./components/DisplayManager/DisplayManager";
-import SpecialButtons from "./components/SpecialButtons/SpecialButtons";
-import AdvancedEditingTools from "./components/AdvancedEditingTools/AdvancedEditingTools";
-import FileManager from "./components/FileManager/FileManager";
-import AuthManager from "./components/AuthManager/AuthManager";
+import UserInterface from "./components/UserInterface/UserInterface";
+import TextControls from "./components/TextControls/TextControls";
+import { 
+  getDisplayBlocks, 
+  updateDisplayBlocks, 
+  saveToHistory, 
+  getDisplayHistory,
+  updateDisplayHistory,
+  resetDisplays
+} from "./utils/displayUtils";
 import { getCurrentUser } from "./utils/userUtils";
 import styles from "./App.module.css";
 
 function App() {
-	// User authentication state
-	const [isLoggedIn, setIsLoggedIn] = useState(false);
-	const [currentUser, setCurrentUser] = useState(null);
+  // Get initial login status directly
+  const username = getCurrentUser();
+  
+  // User authentication state with initial values
+  const [isLoggedIn, setIsLoggedIn] = useState(!!username);
+  const [currentUser, setCurrentUser] = useState(username || null);
 
-	// Array of displays, each containing text blocks
-	const [displays, setDisplays] = useState([[]]);
-	const [activeDisplayIndex, setActiveDisplayIndex] = useState(0);
+  // Array of displays, each containing text blocks
+  const [displays, setDisplays] = useState([[]]);
+  const [activeDisplayIndex, setActiveDisplayIndex] = useState(0);
+  const [displayHistories, setDisplayHistories] = useState([[]]);
 
-	const [language, setLanguage] = useState("en");
-	const [currentStyle, setCurrentStyle] = useState({});
-	const [displayHistories, setDisplayHistories] = useState([[]]);
-	const [selectedBlockIndex, setSelectedBlockIndex] = useState(-1);
-	const [allBlocksSelected, setAllBlocksSelected] = useState(false);
+  // Helper wrapper functions that use our utility functions
+  const getCurrentDisplayBlocks = () => {
+    return getDisplayBlocks(displays, activeDisplayIndex);
+  };
 
-	// Check login status on initial load
-	useEffect(() => {
-		const username = getCurrentUser();
-		if (username) {
-			setIsLoggedIn(true);
-			setCurrentUser(username);
-		}
-	}, []);
+  const updateCurrentDisplayBlocks = (newBlocks) => {
+    setDisplays(updateDisplayBlocks(displays, activeDisplayIndex, newBlocks));
+  };
 
-	// Handle login status change
-	const handleLoginStatusChange = (status, user) => {
-		setIsLoggedIn(status);
-		setCurrentUser(user);
+  const saveToCurrentHistory = () => {
+    setDisplayHistories(
+      saveToHistory(displayHistories, activeDisplayIndex, getCurrentDisplayBlocks())
+    );
+  };
 
-		if (!status) {
-			// Reset displays when logging out
-			setDisplays([[]]);
-			setActiveDisplayIndex(0);
-			setDisplayHistories([[]]);
-		}
-	};
+  const getCurrentHistory = () => {
+    return getDisplayHistory(displayHistories, activeDisplayIndex);
+  };
 
-	// Helper to access current display's text blocks
-	const getCurrentDisplayBlocks = () => {
-		return displays[activeDisplayIndex] || [];
-	};
+  const setCurrentHistory = (newHistory) => {
+    setDisplayHistories(
+      updateDisplayHistory(displayHistories, activeDisplayIndex, newHistory)
+    );
+  };
 
-	// Helper to update current display's text blocks
-	const updateCurrentDisplayBlocks = (newBlocks) => {
-		const newDisplays = [...displays];
-		newDisplays[activeDisplayIndex] = newBlocks;
-		setDisplays(newDisplays);
-	};
+  // Function to handle logout reset
+  const handleLogout = () => {
+    // Reset displays when logging out
+    const { displays: newDisplays, activeIndex, histories } = resetDisplays();
+    setDisplays(newDisplays);
+    setActiveDisplayIndex(activeIndex);
+    setDisplayHistories(histories);
+  };
 
-	// Helper to update current display's history
-	const saveToCurrentHistory = () => {
-		const newDisplayHistories = [...displayHistories];
+  // Handle login status change
+  const handleLoginStatusChange = (status, user) => {
+    setIsLoggedIn(status);
+    setCurrentUser(user);
 
-		// Create the history array for this display if it doesn't exist
-		if (!newDisplayHistories[activeDisplayIndex]) {
-			newDisplayHistories[activeDisplayIndex] = [];
-		}
+    if (!status) {
+      handleLogout();
+    }
+  };
 
-		newDisplayHistories[activeDisplayIndex] = [
-			...newDisplayHistories[activeDisplayIndex],
-			[...getCurrentDisplayBlocks()],
-		];
+  const handleSelectBlock = (index) => {
+    // This function is passed to DisplayManager
+  };
 
-		setDisplayHistories(newDisplayHistories);
-	};
+  return (
+    <div className={styles.container}>
+      <h1>Visual Text Editor</h1>
 
-	const handleKeyPress = (key) => {
-		const newBlock = {
-			text: key,
-			style: currentStyle,
-		};
+      {/* User Interface Component (combines Auth and File Management) */}
+      <UserInterface 
+        textBlocks={getCurrentDisplayBlocks()}
+        setTextBlocks={updateCurrentDisplayBlocks}
+        onLogout={handleLogout}
+        onLoginStatusChange={handleLoginStatusChange}
+        isLoggedIn={isLoggedIn}
+      />
 
-		// Save current state to history for undo
-		saveToCurrentHistory();
+      {/* Display Area */}
+      <DisplayManager
+        displays={displays}
+        setDisplays={setDisplays}
+        activeDisplayIndex={activeDisplayIndex}
+        setActiveDisplayIndex={setActiveDisplayIndex}
+        onSelectBlock={handleSelectBlock}
+      />
 
-		// Update the active display's text blocks
-		updateCurrentDisplayBlocks([...getCurrentDisplayBlocks(), newBlock]);
-	};
-
-	const handleDelete = () => {
-		const currentBlocks = getCurrentDisplayBlocks();
-		if (currentBlocks.length === 0) return;
-
-		// Save current state to history for undo
-		saveToCurrentHistory();
-		updateCurrentDisplayBlocks(currentBlocks.slice(0, -1));
-	};
-
-	const handleDeleteWord = () => {
-		const currentBlocks = getCurrentDisplayBlocks();
-		if (currentBlocks.length === 0) return;
-
-		saveToCurrentHistory();
-
-		let i = currentBlocks.length - 1;
-		while (i >= 0 && currentBlocks[i].text === " ") i--;
-		while (i >= 0 && currentBlocks[i].text !== " ") i--;
-
-		updateCurrentDisplayBlocks(currentBlocks.slice(0, i + 1));
-	};
-
-	const handleClearText = () => {
-		const currentBlocks = getCurrentDisplayBlocks();
-		if (currentBlocks.length === 0) return;
-
-		// Save current state to history for undo
-		saveToCurrentHistory();
-		updateCurrentDisplayBlocks([]);
-	};
-
-	const handleEnter = () => {
-		// Save current state to history for undo
-		saveToCurrentHistory();
-		const newBlock = {
-			text: "\n",
-			style: currentStyle,
-		};
-		updateCurrentDisplayBlocks([...getCurrentDisplayBlocks(), newBlock]);
-	};
-
-	const handleSelectBlock = (index) => {
-		setSelectedBlockIndex(index);
-		setAllBlocksSelected(false);
-
-		// If a block is selected, update the current style to match
-		const currentBlocks = getCurrentDisplayBlocks();
-		if (index >= 0 && index < currentBlocks.length) {
-			setCurrentStyle(currentBlocks[index].style || {});
-		}
-	};
-
-	// Get history for the current display
-	const getCurrentHistory = () => {
-		return displayHistories[activeDisplayIndex] || [];
-	};
-
-	// Set history for the current display
-	const setCurrentHistory = (newHistory) => {
-		const newDisplayHistories = [...displayHistories];
-		newDisplayHistories[activeDisplayIndex] = newHistory;
-		setDisplayHistories(newDisplayHistories);
-	};
-
-	return (
-		<div className={styles.container}>
-			<h1>Visual Text Editor</h1>
-
-			{/* Authentication Component */}
-			<AuthManager onLoginStatusChange={handleLoginStatusChange} />
-
-			{/* File Management Component */}
-			<FileManager
-				textBlocks={getCurrentDisplayBlocks()}
-				setTextBlocks={updateCurrentDisplayBlocks}
-				isLoggedIn={isLoggedIn}
-			/>
-
-			{/* Display Area */}
-			<DisplayManager
-				displays={displays}
-				setDisplays={setDisplays}
-				activeDisplayIndex={activeDisplayIndex}
-				setActiveDisplayIndex={setActiveDisplayIndex}
-				onSelectBlock={handleSelectBlock}
-				selectedBlockIndex={selectedBlockIndex}
-			/>
-
-			{/* Advanced Editing Tools */}
-			<AdvancedEditingTools
-				textBlocks={getCurrentDisplayBlocks()}
-				setTextBlocks={updateCurrentDisplayBlocks}
-				history={getCurrentHistory()}
-				setHistory={setCurrentHistory}
-				selectedBlockIndex={selectedBlockIndex}
-				setSelectedBlockIndex={setSelectedBlockIndex}
-				allBlocksSelected={allBlocksSelected}
-				setAllBlocksSelected={setAllBlocksSelected}
-			/>
-
-			<div className={styles.controls}>
-				{/* Text Formatting Controls */}
-				<SpecialButtons
-					setCurrentStyle={setCurrentStyle}
-					onDeleteWord={handleDeleteWord}
-					onClearText={handleClearText}
-					currentStyle={currentStyle}
-					selectedBlockIndex={selectedBlockIndex}
-					setTextBlocks={updateCurrentDisplayBlocks}
-					allBlocksSelected={allBlocksSelected}
-					textBlocks={getCurrentDisplayBlocks()}
-				/>
-
-				{/* Virtual Keyboard */}
-				<VirtualKeyboard
-					onKeyPress={handleKeyPress}
-					onDelete={handleDelete}
-					onEnter={handleEnter}
-					language={language}
-					setLanguage={setLanguage}
-				/>
-			</div>
-		</div>
-	);
+      {/* Text Controls Component (combines Advanced Editing Tools and Input Controls) */}
+      <TextControls
+        textBlocks={getCurrentDisplayBlocks()}
+        setTextBlocks={updateCurrentDisplayBlocks}
+        history={getCurrentHistory()}
+        setHistory={setCurrentHistory}
+        saveToHistory={saveToCurrentHistory}
+      />
+    </div>
+  );
 }
 
 export default App;

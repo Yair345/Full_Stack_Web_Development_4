@@ -1,5 +1,5 @@
 // FileManager.jsx
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import styles from "./FileManager.module.css";
 import {
 	saveToLocalStorage,
@@ -11,14 +11,9 @@ import { getCurrentUser } from "../../utils/userUtils";
 
 function FileManager({ textBlocks, setTextBlocks, isLoggedIn }) {
 	const [filename, setFilename] = useState("");
-	const [availableFiles, setAvailableFiles] = useState([]);
+	const [availableFiles, setAvailableFiles] = useState(listSavedFilenames());
 	const [message, setMessage] = useState("");
 	const [messageType, setMessageType] = useState(""); // For styling: "success" or "error"
-
-	// Refresh file list when login status changes or component mounts
-	useEffect(() => {
-		refreshFileList();
-	}, [isLoggedIn]);
 
 	const refreshFileList = () => {
 		setAvailableFiles(listSavedFilenames());
@@ -135,7 +130,7 @@ function FileManager({ textBlocks, setTextBlocks, isLoggedIn }) {
 				/>
 				<div className={styles.buttonGroup}>
 					<button onClick={handleSave} className={styles.button}>
-						💾 Save
+						 💾 Save
 					</button>
 					<button onClick={handleLoad} className={styles.button}>
 						📂 Load
@@ -144,7 +139,7 @@ function FileManager({ textBlocks, setTextBlocks, isLoggedIn }) {
 						onClick={handleDelete}
 						className={`${styles.button} ${styles.deleteButton}`}
 					>
-						🗑️ Delete
+						 🗑️ Delete
 					</button>
 				</div>
 			</div>

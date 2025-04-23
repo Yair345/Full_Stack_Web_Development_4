@@ -341,15 +341,6 @@ function AdvancedEditingTools({
 				case "lower":
 					newText = block.text.toLowerCase();
 					break;
-				case "title":
-					// Simple title case implementation
-					newText = block.text.replace(
-						/\w\S*/g,
-						(txt) =>
-							txt.charAt(0).toUpperCase() +
-							txt.substr(1).toLowerCase()
-					);
-					break;
 				default:
 					newText = block.text;
 			}
@@ -433,7 +424,7 @@ function AdvancedEditingTools({
 				</button>
 				<button
 					onClick={handleUnSelectAll}
-					className={`${styles.button} ${styles.large}`}
+					className={`${styles.button} ${styles.cancelSelection}`}
 				>
 					Cancel Selection
 				</button>
@@ -448,12 +439,6 @@ function AdvancedEditingTools({
 					className={`${styles.button} ${styles.small}`}
 				>
 					Lowercase Letters
-				</button>
-				<button
-					onClick={() => handleChangeCase("title")}
-					className={`${styles.button} ${styles.hebrew}`}
-				>
-					Uppercase Letters First
 				</button>
 			</div>
 		</div>
