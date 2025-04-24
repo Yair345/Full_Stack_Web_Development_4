@@ -73,13 +73,18 @@ function DisplayManager({
 
 			<div className={styles.displayContainer}>
 				{/* Show all displays, not just the active one */}
+				{console.log("displays:", displays)}
 				{displays.map((display, index) => (
 					<div
 						key={index}
 						className={`${styles.displayWrapper} ${
-							activeDisplayIndex === index ? styles.activeDisplay : ""
+							activeDisplayIndex === index
+								? styles.activeDisplay
+								: ""
 						}`}
-						onClick={() => index !== activeDisplayIndex && focusDisplay(index)}
+						onClick={() =>
+							index !== activeDisplayIndex && focusDisplay(index)
+						}
 					>
 						{displays.length > 1 && (
 							<button
@@ -92,13 +97,21 @@ function DisplayManager({
 								×
 							</button>
 						)}
-						<div className={styles.displayTitle}>Document {index + 1}</div>
+						<div className={styles.displayTitle}>
+							Document {index + 1}
+						</div>
 						<TextDisplay
 							textBlocks={display}
 							onSelectBlock={(blockIndex) =>
-								index === activeDisplayIndex ? onSelectBlock(blockIndex) : null
+								index === activeDisplayIndex
+									? onSelectBlock(blockIndex)
+									: null
 							}
-							selectedBlockIndex={index === activeDisplayIndex ? selectedBlockIndex : -1}
+							selectedBlockIndex={
+								index === activeDisplayIndex
+									? selectedBlockIndex
+									: -1
+							}
 						/>
 					</div>
 				))}

@@ -10,7 +10,6 @@ const TextControls = ({
   setHistory,
   saveToHistory,
 }) => {
-  // States moved from App.jsx
   const [selectedBlockIndex, setSelectedBlockIndex] = useState(-1);
   const [allBlocksSelected, setAllBlocksSelected] = useState(false);
   
