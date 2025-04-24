@@ -102,15 +102,18 @@ function DisplayManager({
 						</div>
 						<TextDisplay
 							textBlocks={display}
-							onSelectBlock={(blockIndex) =>
+							onSelectBlock={(
+								blockIndex // Pass the selection handler only if it's the active display
+							) =>
 								index === activeDisplayIndex
-									? onSelectBlock(blockIndex)
+									? onSelectBlock(blockIndex) // Call the handler received from App
 									: null
 							}
 							selectedBlockIndex={
+								// Pass the index only if it's the active display
 								index === activeDisplayIndex
 									? selectedBlockIndex
-									: -1
+									: -1 // Otherwise, pass -1 (no selection)
 							}
 						/>
 					</div>

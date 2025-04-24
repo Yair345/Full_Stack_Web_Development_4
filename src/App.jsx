@@ -2,7 +2,7 @@
 import { useState } from "react";
 import DisplayManager from "./components/DisplayManager/DisplayManager";
 import UserInterface from "./components/UserInterface/UserInterface";
-import TextControls from "./components/TextControls/TextControls";
+import TextControls from "./components/TextControls/TextControls"; // Assuming this component exists
 import {
 	getDisplayBlocks,
 	updateDisplayBlocks,
@@ -27,15 +27,37 @@ function App() {
 	const [activeDisplayIndex, setActiveDisplayIndex] = useState(0);
 	const [displayHistories, setDisplayHistories] = useState([[]]);
 
+	// State for Selection
+	const [selectedBlockIndex, setSelectedBlockIndex] = useState(-1); // -1 means no block selected
+	const [allBlocksSelected, setAllBlocksSelected] = useState(false);
+
 	// Helper wrapper functions that use our utility functions
 	const getCurrentDisplayBlocks = () => {
 		return getDisplayBlocks(displays, activeDisplayIndex);
 	};
 
-	const updateCurrentDisplayBlocks = (newBlocks) => {
-		setDisplays(
-			updateDisplayBlocks(displays, activeDisplayIndex, newBlocks)
-		);
+	// Use the robust version of updateCurrentDisplayBlocks
+	const updateCurrentDisplayBlocks = (updater) => {
+		setDisplays((currentDisplays) => {
+			// Use functional update for setDisplays
+			// Get the current blocks for the active display from the latest state
+			const activeBlocks = getDisplayBlocks(
+				currentDisplays,
+				activeDisplayIndex
+			);
+
+			// If updater is a function (like the one from SpecialButtons), call it with the current active blocks
+			// Otherwise, assume updater is the new array of blocks directly
+			const newBlocks =
+				typeof updater === "function" ? updater(activeBlocks) : updater;
+
+			// Use the utility function to create the final updated displays array
+			return updateDisplayBlocks(
+				currentDisplays,
+				activeDisplayIndex,
+				newBlocks
+			);
+		});
 	};
 
 	const saveToCurrentHistory = () => {
@@ -73,6 +95,8 @@ function App() {
 		setDisplays(newDisplays);
 		setActiveDisplayIndex(activeIndex);
 		setDisplayHistories(histories);
+		setSelectedBlockIndex(-1);
+		setAllBlocksSelected(false);
 	};
 
 	// Handle login status change
@@ -86,7 +110,10 @@ function App() {
 	};
 
 	const handleSelectBlock = (index) => {
-		// This function is passed to DisplayManager
+		// Set the index of the clicked block as selected
+		setSelectedBlockIndex(index);
+		// Selecting a single block cancels the 'Select All' state
+		setAllBlocksSelected(false);
 	};
 
 	return (
@@ -108,16 +135,21 @@ function App() {
 				setDisplays={setDisplays}
 				activeDisplayIndex={activeDisplayIndex}
 				setActiveDisplayIndex={setActiveDisplayIndex}
-				onSelectBlock={handleSelectBlock}
+				onSelectBlock={handleSelectBlock} // Pass the implemented function
+				selectedBlockIndex={selectedBlockIndex} // Pass state for highlighting
 			/>
 
-			{/* Text Controls Component (combines Advanced Editing Tools and Input Controls) */}
+			{/* Text Controls Component */}
 			<TextControls
 				textBlocks={getCurrentDisplayBlocks()}
 				setTextBlocks={updateCurrentDisplayBlocks}
 				history={getCurrentHistory()}
 				setHistory={setCurrentHistory}
 				saveToHistory={saveToCurrentHistory}
+				selectedBlockIndex={selectedBlockIndex}
+				setSelectedBlockIndex={setSelectedBlockIndex}
+				allBlocksSelected={allBlocksSelected}
+				setAllBlocksSelected={setAllBlocksSelected}
 			/>
 		</div>
 	);
