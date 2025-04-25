@@ -121,36 +121,42 @@ function App() {
 			<h1>Visual Text Editor</h1>
 
 			{/* User Interface Component (combines Auth and File Management) */}
+			{/* Always render UserInterface, but its internal components might behave differently based on isLoggedIn */}
 			<UserInterface
 				textBlocks={getCurrentDisplayBlocks()}
 				setTextBlocks={updateCurrentDisplayBlocks}
 				onLogout={handleLogout}
-				onLoginStatusChange={handleLoginStatusChange}
-				isLoggedIn={isLoggedIn}
+				onLoginStatusChange={handleLoginStatusChange} // Pass the handler down
+				isLoggedIn={isLoggedIn} // Pass login status down
 			/>
 
-			{/* Display Area */}
-			<DisplayManager
-				displays={displays}
-				setDisplays={setDisplays}
-				activeDisplayIndex={activeDisplayIndex}
-				setActiveDisplayIndex={setActiveDisplayIndex}
-				onSelectBlock={handleSelectBlock} // Pass the implemented function
-				selectedBlockIndex={selectedBlockIndex} // Pass state for highlighting
-			/>
+			{/* Conditionally render DisplayManager and TextControls only if logged in */}
+			{isLoggedIn && (
+				<>
+					{/* Display Area */}
+					<DisplayManager
+						displays={displays}
+						setDisplays={setDisplays}
+						activeDisplayIndex={activeDisplayIndex}
+						setActiveDisplayIndex={setActiveDisplayIndex}
+						onSelectBlock={handleSelectBlock} // Pass the implemented function
+						selectedBlockIndex={selectedBlockIndex} // Pass state for highlighting
+					/>
 
-			{/* Text Controls Component */}
-			<TextControls
-				textBlocks={getCurrentDisplayBlocks()}
-				setTextBlocks={updateCurrentDisplayBlocks}
-				history={getCurrentHistory()}
-				setHistory={setCurrentHistory}
-				saveToHistory={saveToCurrentHistory}
-				selectedBlockIndex={selectedBlockIndex}
-				setSelectedBlockIndex={setSelectedBlockIndex}
-				allBlocksSelected={allBlocksSelected}
-				setAllBlocksSelected={setAllBlocksSelected}
-			/>
+					{/* Text Controls Component */}
+					<TextControls
+						textBlocks={getCurrentDisplayBlocks()}
+						setTextBlocks={updateCurrentDisplayBlocks}
+						history={getCurrentHistory()}
+						setHistory={setCurrentHistory}
+						saveToHistory={saveToCurrentHistory}
+						selectedBlockIndex={selectedBlockIndex}
+						setSelectedBlockIndex={setSelectedBlockIndex}
+						allBlocksSelected={allBlocksSelected}
+						setAllBlocksSelected={setAllBlocksSelected}
+					/>
+				</>
+			)}
 		</div>
 	);
 }

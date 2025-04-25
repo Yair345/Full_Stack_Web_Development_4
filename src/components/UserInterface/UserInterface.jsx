@@ -1,24 +1,31 @@
-import React, { useState } from 'react';
+import React from 'react'; // Removed useState as it's no longer needed here
 import AuthManager from '../AuthManager/AuthManager';
 import FileManager from '../FileManager/FileManager';
-import { getCurrentUser } from '../../utils/userUtils';
+// Removed getCurrentUser import as isLoggedIn is now passed down
 import styles from './UserInterface.module.css';
 
-const UserInterface = ({ textBlocks, setTextBlocks, onLogout }) => {
-  // Get initial login status without useEffect
-  const username = getCurrentUser();
-  
-  // Move user authentication state to this component with initial values
-  const [isLoggedIn, setIsLoggedIn] = useState(!!username);
-  const [currentUser, setCurrentUser] = useState(username || null);
+const UserInterface = ({
+  textBlocks,
+  setTextBlocks,
+  onLogout, // Still needed for AuthManager/logout functionality
+  onLoginStatusChange, // This is the function passed from App.jsx
+  isLoggedIn // This is the state passed from App.jsx
+}) => {
 
-  // Handle login status change
-  const handleLoginStatusChange = (status, user) => {
-    setIsLoggedIn(status);
-    setCurrentUser(user);
+  // No need for internal state (isLoggedIn, setIsLoggedIn, currentUser, setCurrentUser)
+  // We will use the props passed down from App.jsx directly
 
-    // Notify parent component about logout
+  // The handleLoginStatusChange function passed to AuthManager
+  // should be the one received from App.jsx
+  const handleAuthChange = (status, user) => {
+    // Call the function passed from App.jsx to update the state there
+    if (onLoginStatusChange) {
+      onLoginStatusChange(status, user);
+    }
+    // Handle logout notification separately if needed within AuthManager or here
     if (!status && onLogout) {
+      // It might be cleaner for AuthManager to call onLogout directly when logout occurs
+      // But we keep the original logic for now
       onLogout();
     }
   };
@@ -26,14 +33,16 @@ const UserInterface = ({ textBlocks, setTextBlocks, onLogout }) => {
   return (
     <div className={styles.userInterface}>
       {/* Authentication Component */}
-      <AuthManager onLoginStatusChange={handleLoginStatusChange} />
+      {/* Pass the handleAuthChange function which correctly calls the App.jsx handler */}
+      <AuthManager onLoginStatusChange={handleAuthChange} />
 
       {/* File Management Component */}
-      <FileManager 
-        key={isLoggedIn ? "logged-in" : "logged-out"}
+      {/* Use the isLoggedIn prop directly from App.jsx */}
+      <FileManager
+        key={isLoggedIn ? "logged-in" : "logged-out"} // Key can still be useful
         textBlocks={textBlocks}
         setTextBlocks={setTextBlocks}
-        isLoggedIn={isLoggedIn}
+        isLoggedIn={isLoggedIn} // Use the prop directly
       />
     </div>
   );

@@ -48,7 +48,7 @@ export const loginUser = (username, password) => {
 
     // Set current user
     localStorage.setItem(CURRENT_USER_KEY, username);
-    return { success: true, message: "Login successful!", user: { username: user.username } };
+    return { success: true, message: "", user: { username: user.username } };
 
   } catch (err) {
     console.error("Error logging in", err);

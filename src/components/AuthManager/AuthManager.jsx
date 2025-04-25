@@ -70,7 +70,7 @@ function AuthManager({ onLoginStatusChange }) {
 	// If user is logged in, show user info and logout button
 	if (currentUser) {
 		return (
-			<div className={styles.authContainer}>
+			<div className={styles.authContainerAfterLogin}>
 				<div className={styles.userInfo}>
 					<span className={styles.welcomeText}>
 						Welcome, <strong>{currentUser}</strong>!
@@ -89,7 +89,7 @@ function AuthManager({ onLoginStatusChange }) {
 
 	// Otherwise show login/register form
 	return (
-		<div className={styles.authContainer}>
+		<div className={styles.authContainerBeforeLogin}>
 			<h2>{isLogin ? "Login" : "Register"}</h2>
 
 			<form onSubmit={handleSubmit} className={styles.authForm}>

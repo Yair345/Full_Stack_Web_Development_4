@@ -1,6 +1,6 @@
 .userInterface {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   gap: 1rem;
   width: 100%;
   margin-bottom: 1rem;
