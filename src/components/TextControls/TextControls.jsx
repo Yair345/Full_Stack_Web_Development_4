@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import AdvancedEditingTools from "../AdvancedEditingTools/AdvancedEditingTools";
 import InputControls from "../InputControls/InputControls";
 import styles from "./TextControls.module.css";

@@ -47,7 +47,7 @@ export const loginUser = (username, password) => {
     }
 
     // Set current user
-    localStorage.setItem(CURRENT_USER_KEY, username);
+    sessionStorage.setItem(CURRENT_USER_KEY, username);
     return { success: true, message: "", user: { username: user.username } };
 
   } catch (err) {
@@ -58,12 +58,12 @@ export const loginUser = (username, password) => {
 
 // Check if user is logged in
 export const getCurrentUser = () => {
-  return localStorage.getItem(CURRENT_USER_KEY);
+  return sessionStorage.getItem(CURRENT_USER_KEY);
 };
 
 // Logout user
 export const logoutUser = () => {
-  localStorage.removeItem(CURRENT_USER_KEY);
+  sessionStorage.removeItem(CURRENT_USER_KEY);
   return { success: true, message: "Logout successful!" };
 };
 

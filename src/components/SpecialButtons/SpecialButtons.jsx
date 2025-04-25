@@ -9,7 +9,7 @@ function SpecialButtons({
 	selectedBlockIndex,
 	setTextBlocks,
 	allBlocksSelected,
-	textBlocks, // Add this to receive the current active display's blocks
+	textBlocks,
 }) {
 	const fontSizes = [8, 10, 12, 14, 16, 18, 20, 24, 28, 32, 36, 48, 72];
 	const fonts = [

@@ -2,7 +2,7 @@
 import { useState } from "react";
 import DisplayManager from "./components/DisplayManager/DisplayManager";
 import UserInterface from "./components/UserInterface/UserInterface";
-import TextControls from "./components/TextControls/TextControls"; // Assuming this component exists
+import TextControls from "./components/TextControls/TextControls";
 import {
 	getDisplayBlocks,
 	updateDisplayBlocks,
@@ -121,13 +121,12 @@ function App() {
 			<h1>Visual Text Editor</h1>
 
 			{/* User Interface Component (combines Auth and File Management) */}
-			{/* Always render UserInterface, but its internal components might behave differently based on isLoggedIn */}
 			<UserInterface
 				textBlocks={getCurrentDisplayBlocks()}
 				setTextBlocks={updateCurrentDisplayBlocks}
 				onLogout={handleLogout}
-				onLoginStatusChange={handleLoginStatusChange} // Pass the handler down
-				isLoggedIn={isLoggedIn} // Pass login status down
+				onLoginStatusChange={handleLoginStatusChange}
+				isLoggedIn={isLoggedIn}
 			/>
 
 			{/* Conditionally render DisplayManager and TextControls only if logged in */}
@@ -139,8 +138,8 @@ function App() {
 						setDisplays={setDisplays}
 						activeDisplayIndex={activeDisplayIndex}
 						setActiveDisplayIndex={setActiveDisplayIndex}
-						onSelectBlock={handleSelectBlock} // Pass the implemented function
-						selectedBlockIndex={selectedBlockIndex} // Pass state for highlighting
+						onSelectBlock={handleSelectBlock}
+						selectedBlockIndex={selectedBlockIndex}
 					/>
 
 					{/* Text Controls Component */}

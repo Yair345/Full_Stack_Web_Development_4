@@ -1,5 +1,4 @@
 // DisplayManager.jsx
-import { useState } from "react";
 import TextDisplay from "../TextDisplay/TextDisplay";
 import styles from "./DisplayManager.module.css";
 
@@ -73,7 +72,6 @@ function DisplayManager({
 
 			<div className={styles.displayContainer}>
 				{/* Show all displays, not just the active one */}
-				{console.log("displays:", displays)}
 				{displays.map((display, index) => (
 					<div
 						key={index}

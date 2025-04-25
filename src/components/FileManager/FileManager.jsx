@@ -7,7 +7,6 @@ import {
 	listSavedFilenames,
 	deleteFile,
 } from "../../utils/storageUtils";
-import { getCurrentUser } from "../../utils/userUtils";
 
 function FileManager({ textBlocks, setTextBlocks, isLoggedIn }) {
 	const [filename, setFilename] = useState("");
@@ -31,11 +30,6 @@ function FileManager({ textBlocks, setTextBlocks, isLoggedIn }) {
 	};
 
 	const handleSave = () => {
-		if (!isLoggedIn) {
-			displayMessage("Please log in to save files", "error");
-			return;
-		}
-
 		if (!filename) {
 			displayMessage("Please enter a filename", "error");
 			return;
@@ -57,11 +51,6 @@ function FileManager({ textBlocks, setTextBlocks, isLoggedIn }) {
 	};
 
 	const handleLoad = () => {
-		if (!isLoggedIn) {
-			displayMessage("Please log in to load files", "error");
-			return;
-		}
-
 		if (!filename) {
 			displayMessage("Please enter a filename to load", "error");
 			return;
@@ -82,11 +71,6 @@ function FileManager({ textBlocks, setTextBlocks, isLoggedIn }) {
 	};
 
 	const handleDelete = () => {
-		if (!isLoggedIn) {
-			displayMessage("Please log in to delete files", "error");
-			return;
-		}
-
 		if (!filename) {
 			displayMessage("Please enter a filename to delete", "error");
 			return;
@@ -130,7 +114,7 @@ function FileManager({ textBlocks, setTextBlocks, isLoggedIn }) {
 				/>
 				<div className={styles.buttonGroup}>
 					<button onClick={handleSave} className={styles.button}>
-						 💾 Save
+						💾 Save
 					</button>
 					<button onClick={handleLoad} className={styles.button}>
 						📂 Load
@@ -139,7 +123,7 @@ function FileManager({ textBlocks, setTextBlocks, isLoggedIn }) {
 						onClick={handleDelete}
 						className={`${styles.button} ${styles.deleteButton}`}
 					>
-						 🗑️ Delete
+						🗑️ Delete
 					</button>
 				</div>
 			</div>

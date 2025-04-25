@@ -3,7 +3,6 @@ import styles from "./TextDisplay.module.css";
 function TextDisplay({ textBlocks, onSelectBlock, selectedBlockIndex }) {
 	return (
 		<div className={styles.textDisplay}>
-			{console.log("textBlocks:", textBlocks)}
 			{textBlocks.map((block, index) => (
 				<span
 					key={index}
